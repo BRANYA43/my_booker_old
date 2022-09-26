@@ -141,15 +141,3 @@ class InterfaceListView(MyPanel):
             self.btn_info.Enable(False)
             self.btn_edit.Enable(False)
             self.btn_del.Enable(False)
-
-
-class ProfileView(MyDialog):
-    pass
-
-
-class FormView(MyDialog):
-    pass
-
-
-class FormModel:
-    pass

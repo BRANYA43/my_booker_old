@@ -5,14 +5,15 @@ NAME_ST = {
     'rate': 'Rate:',
     'laborer_1': 'Laborer:',
     'product': 'Product:',
-    'model': 'ListModel:',
+    'form_model': 'ListModel:',
     'size': 'Size:',
     'details': 'Details:',
     'title': 'Title:',
     'count': 'Detail count:',
     'operation': 'Operation:',
     'cost': 'Cost:',
-    'full_cost': 'Full Cost:'
+    'full_cost': 'Full Cost:',
+    'model': 'Model:',
 }
 NAME_BTN = {
     'save': 'Save',
@@ -26,6 +27,7 @@ NAME_CB = {
 }
 NAME_COL_HEADER = {
     'title': 'Title',
+    'id': 'Id',
     'count': 'Count',
     'operation': 'Operation',
     'cost': 'Cost',
@@ -36,8 +38,9 @@ NAME_EXAMPLE = {
     'operation': 'Operation_1',
     'name': 'John A. A.',
     'model': 'Model_1',
-    'size': '1x1'
+    'size': '1x1',
 }
 NAME_TITLE = {
-    'laborer': 'LABORER'
+    'laborer': 'LABORER',
+    'product': 'PRODUCT',
 }
