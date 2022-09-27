@@ -64,7 +64,7 @@ class ListModel(InterfaceListModel):
         self.add_in_ids(laborer.full_name, laborer.id)
 
     def set_value_widgets(self, select_id: int, full_name: wx.TextCtrl, job_title: wx.ComboBox, payment: wx.ComboBox, rate: wx.TextCtrl):
-        """Встановлює у wx_widgets значення атрибутів Laborer."""
+        """Встановлює у wx_widgets значення атрибутів Object."""
         laborer = self.get_object(select_id)
         full_name.SetValue(laborer.full_name)
         job_title.SetValue(laborer.job_title)
@@ -72,20 +72,12 @@ class ListModel(InterfaceListModel):
         rate.SetValue(str(laborer.rate))
 
     def set_attrs_select_laborer(self, select_id: int, full_name: str, job_title: str, payment: str, rate: str):
-        """Встановлює атрибути вибраного Laborer"""
+        """Встановлює атрибути вибраного Object"""
         laborer = self.get_object(select_id)
         laborer.full_name = full_name
         laborer.job_title = job_title
         laborer.payment = payment
         laborer.rate = rate
-
-    def change_name_select_laborer(self, select_id: int, select_name: str):
-        """Змінює ім'я в словнику ids вибраного Laborer."""
-        old_name = select_name
-        new_name = self.get_name(select_id)
-        if old_name != new_name:
-            self.add_in_ids(new_name, self.get_id(old_name))
-            self.del_id(old_name)
 
 
 class LaborerInfoView(MyDialog):
@@ -157,7 +149,7 @@ class LaborerView(MyDialog):
     def on_save(self, event):
         if self.editing:
             self.model.set_attrs_select_laborer(self.select_id, *self.__get_all_value_widgets())
-            self.model.change_name_select_laborer(self.select_id, self.select_name)
+            self.model.change_name_select_object(self.select_id, self.select_name)
         else:
             laborer = self.model.create(*self.__get_all_value_widgets())
             self.model.add(laborer)
