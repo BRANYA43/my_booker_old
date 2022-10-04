@@ -56,7 +56,7 @@ class ListModel(InterfaceListModel):
         return self.get_object(select_id).full_name
 
     def add(self, laborer: Laborer):
-        """Додає Object у словники:
+        """Додає Laborer у словники:
         objects[id: object]
         ids[name: id]
         """
@@ -64,7 +64,7 @@ class ListModel(InterfaceListModel):
         self.add_in_ids(laborer.full_name, laborer.id)
 
     def set_value_widgets(self, select_id: int, full_name: wx.TextCtrl, job_title: wx.ComboBox, payment: wx.ComboBox, rate: wx.TextCtrl):
-        """Встановлює у wx_widgets значення атрибутів Object."""
+        """Встановлює у wx_widgets значення атрибутів Laborer."""
         laborer = self.get_object(select_id)
         full_name.SetValue(laborer.full_name)
         job_title.SetValue(laborer.job_title)
@@ -72,7 +72,7 @@ class ListModel(InterfaceListModel):
         rate.SetValue(str(laborer.rate))
 
     def set_attrs_select_laborer(self, select_id: int, full_name: str, job_title: str, payment: str, rate: str):
-        """Встановлює атрибути вибраного Object"""
+        """Встановлює атрибути вибраного Laborer"""
         laborer = self.get_object(select_id)
         laborer.full_name = full_name
         laborer.job_title = job_title
@@ -148,10 +148,10 @@ class LaborerView(MyDialog):
 
     def on_save(self, event):
         if self.editing:
-            self.model.set_attrs_select_laborer(self.select_id, *self.__get_all_value_widgets())
+            self.model.set_attrs_select_laborer(self.select_id, *self.get_all_value_widgets())
             self.model.change_name_select_object(self.select_id, self.select_name)
         else:
-            laborer = self.model.create(*self.__get_all_value_widgets())
+            laborer = self.model.create(*self.get_all_value_widgets())
             self.model.add(laborer)
         self.Destroy()
 
@@ -164,7 +164,7 @@ class LaborerView(MyDialog):
     def get_all_widgets(self) -> tuple:
         return self.tc_full_name, self.cb_job_title, self.cb_payment, self.tc_rate
 
-    def __get_all_value_widgets(self) -> tuple:
+    def get_all_value_widgets(self) -> tuple:
         return self.tc_full_name.GetValue(), self.cb_job_title.GetValue(), self.cb_payment.GetValue(), self.tc_rate.GetValue()
 
 
@@ -173,17 +173,17 @@ class LaborerListView(InterfaceListView):
         super().__init__(parent, model)
 
     def show_default_object_view(self):
-        """Показує діалогове вікно Object заповнене за замовчуванням"""
+        """Показує діалогове вікно LaborerView заповнене за замовчуванням"""
         laborer_view = LaborerView(self.parent, self.model, self.select_id, self.select_name, self.editing)
         laborer_view.ShowModal()
 
     def show_fulled_object_view(self):
-        """Показує діалогове вікно заповнене атрибутами вибраного Object."""
+        """Показує діалогове вікно заповнене атрибутами вибраного LaborerView."""
         laborer_view = LaborerView(self.parent, self.model, self.select_id, self.select_name, self.editing)
         self.model.set_value_widgets(self.select_id, *laborer_view.get_all_widgets())
         laborer_view.enable_tc_rate()
         laborer_view.ShowModal()
 
     def show_info_view(self):
-        """Показує діалогове вікно заповнене інформацією вибраного Object."""
+        """Показує діалогове вікно заповнене інформацією вибраного LaborerInfoView."""
         LaborerInfoView(self.parent, self.model.get_object(self.select_id)).ShowModal()
