@@ -62,6 +62,7 @@ class InterfaceListModel:
         raise NotImplemented
 
     def get_id(self, select_name: str) -> int | str:
+        """Повертає індекс за ім'ям."""
         return self.ids.get(select_name, 'None Name')
 
     def add(self, _object):
@@ -81,7 +82,7 @@ class InterfaceListModel:
         raise NotImplemented
 
     def set_attr_select_object(self, select_id: int, *attrs):
-        """Змінює ім'я в словнику ids вибраного Object."""
+        """Встановлює в атрибути Object нове значення."""
         raise NotImplemented
 
     def change_name_select_object(self, select_id: int, select_name: str):
@@ -158,6 +159,8 @@ class InterfaceListView(MyPanel):
         index = self.list_box.GetSelection()
         self.select_name = self.model.get_name_list()[index]
         self.select_id = self.model.get_id(self.select_name)
+        print(self.model.ids)
+        print(self.model.objects)
 
     def on_info(self, event):
         self.show_info_view()
@@ -171,7 +174,7 @@ class InterfaceListView(MyPanel):
     def on_edit(self, event):
         if self.select_id is not None:
             self.editing = True
-            self.show_default_object_view()
+            self.show_fulled_object_view()
             self.fulled_list()
 
     def on_delete(self, event):
