@@ -127,7 +127,7 @@ class InterfaceListView(MyPanel):
         self.model = model
 
         # Widgets
-        st_title = wx.StaticText(self, label=lang.NAME_TITLE['laborer'])
+        self.st_title = wx.StaticText(self, label=lang.NAME_EXAMPLE['title'])
         self.list_box = wx.ListBox(self, size=(210, 270), choices=self.model.get_name_list())
         self.btn_info = wx.Button(self, id=wx.ID_ANY, label=lang.NAME_BTN['info'])
         self.btn_add = wx.Button(self, id=wx.ID_ANY, label=lang.NAME_BTN['add'])
@@ -136,7 +136,7 @@ class InterfaceListView(MyPanel):
 
         # Sizers
         main_box = wx.BoxSizer(wx.VERTICAL)
-        main_box.Add(st_title, flag=wx.ALIGN_CENTRE | wx.TOP | wx.BOTTOM, border=10)
+        main_box.Add(self.st_title, flag=wx.ALIGN_CENTRE | wx.TOP | wx.BOTTOM, border=10)
         main_box.Add(self.list_box, flag=wx.ALIGN_CENTRE | wx.BOTTOM, border=10)
         main_box.Add(self.btn_info, flag=wx.ALIGN_CENTRE | wx.BOTTOM, border=10)
         main_box.Add(self.btn_add, flag=wx.ALIGN_CENTRE | wx.BOTTOM, border=10)
@@ -159,7 +159,7 @@ class InterfaceListView(MyPanel):
         index = self.list_box.GetSelection()
         self.select_name = self.model.get_name_list()[index]
         self.select_id = self.model.get_id(self.select_name)
-        print(self.model.ids)
+        print(self.model.ids)  # todo
         print(self.model.objects)
 
     def on_info(self, event):
