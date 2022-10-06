@@ -171,6 +171,7 @@ class LaborerView(MyDialog):
 class LaborerListView(InterfaceListView):
     def __init__(self, parent, model: ListModel):
         super().__init__(parent, model)
+        self.st_title.SetLabel(lang.NAME_TITLE['laborer'])
 
     def show_default_object_view(self):
         """Показує діалогове вікно LaborerView заповнене за замовчуванням"""
