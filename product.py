@@ -19,7 +19,7 @@ class Detail:
 
     @property
     def id(self) -> int:
-        return self.__ID
+        return self.__ID.GetId()
 
     @property
     def count(self) -> Decimal:
@@ -38,7 +38,7 @@ class Detail:
         self.__cost = Decimal(cost)
 
     def __str__(self):
-        return f'{self.title}_{self.__ID.GetId()}'
+        return f'{self.title}_{self.id}'
 
     def __repr__(self):
         return self.__str__()
@@ -67,7 +67,8 @@ class Product:
 
     def get(self, detail_id: int) -> Detail:
         """Повертає Detail зі словника"""
-        return self.__details.get(detail_id)
+        print(self.__details)  # todo
+        return self.__details.get(detail_id, 'None ID')
 
     def delete(self, detail_id: int):
         """Видаляє Detail зі словника"""
@@ -128,6 +129,7 @@ class TabModel(InterfaceListModel):
     def set_value_widgets(self, select_id: int, title: wx.TextCtrl, count: wx.TextCtrl, operation: wx.TextCtrl, cost: wx.TextCtrl):
         """Встановлює у wx_widgets значення атрибутів Detail."""
         detail = self.get_object(select_id)
+        print(detail)
         title.SetValue(detail.title)
         count.SetValue(str(detail.count))
         operation.SetValue(detail.operation)
@@ -197,12 +199,13 @@ class ListModel(InterfaceListModel):
 
 
 class DetailView(MyDialog):
-    def __init__(self, parent, model: TabModel, list_ctrl: wx.ListCtrl, select_id: int, editing: bool):
+    def __init__(self, parent, model: TabModel, list_ctrl: wx.ListCtrl, select_id: int, select_row: int, editing: bool):
         super().__init__(parent, size=(375, 265))
         # Variables
         self.model = model
         self.list_ctrl = list_ctrl
-        self.select_item = select_id
+        self.select_id = select_id
+        self.select_row = select_row
         self.editing = editing
 
         # Widgets
@@ -210,10 +213,10 @@ class DetailView(MyDialog):
         self.st_count_details = wx.StaticText(self, label=lang.NAME_ST['count'])
         self.st_operation = wx.StaticText(self, label=lang.NAME_ST['operation'])
         self.st_cost = wx.StaticText(self, label=lang.NAME_ST['cost'])
-        self.tc_title = wx.TextCtrl(self, size=(220, -1))
-        self.tc_count_details = wx.TextCtrl(self, size=(60, -1))
-        self.tc_operation = wx.TextCtrl(self, size=(220, -1))
-        self.tc_cost = wx.TextCtrl(self, size=(60, -1))
+        self.tc_title = wx.TextCtrl(self, value=lang.NAME_EXAMPLE['title'], size=(220, -1))
+        self.tc_count_details = wx.TextCtrl(self, value=lang.NAME_EXAMPLE['number'], size=(60, -1))
+        self.tc_operation = wx.TextCtrl(self, value=lang.NAME_EXAMPLE['operation'], size=(220, -1))
+        self.tc_cost = wx.TextCtrl(self, value=lang.NAME_EXAMPLE['number'], size=(60, -1))
         self.btn_save = wx.Button(self, label=lang.NAME_BTN['save'])
 
         # Sizers
@@ -238,11 +241,32 @@ class DetailView(MyDialog):
 
     def on_save(self, event):
         if self.editing:
-            pass
+            self.model.set_attr_select_object(self.select_id, *self.get_all_value_widgets())
+            self.set_row_list_ctrl(self.select_row, *self.get_all_value_widgets())
         else:
-            pass
+            detail = self.model.create(*self.get_all_value_widgets())
+            self.model.add(detail)
+            self.list_ctrl.SetItemData(self.list_ctrl.Append((detail.title,
+                                                              detail.id,
+                                                              detail.count,
+                                                              detail.operation,
+                                                              detail.cost)),
+                                       self.model.product.get_long())
+            print(detail)  # todo
+            print(self.model.product.get_long())
         self.Destroy()
 
+    def get_all_widgets(self) -> tuple:
+        return self.tc_title, self.tc_count_details, self.tc_operation, self.tc_cost
+
+    def get_all_value_widgets(self) -> tuple:
+        return self.tc_title.GetValue(), self.tc_count_details.GetValue(), self.tc_operation.GetValue(), self.tc_cost.GetValue()
+
+    def set_row_list_ctrl(self, row: int, title: str, count: str, operation: str, cost: str):
+        self.list_ctrl.SetItem(row, 0, title)
+        self.list_ctrl.SetItem(row, 2, count)
+        self.list_ctrl.SetItem(row, 3, operation)
+        self.list_ctrl.SetItem(row, 4, cost)
 
 class ProductView(MyDialog):
     def __init__(self, parent, list_model: ListModel, tab_model: TabModel, list_select_id: int, list_select_name: str, list_editing: bool):
@@ -255,7 +279,7 @@ class ProductView(MyDialog):
         self.list_select_name = list_select_name
         self.list_editing = list_editing
         self.select_id = None
-        self.select_name = None
+        self.select_row = None
         self.editing = False
 
         # Widgets
@@ -314,7 +338,11 @@ class ProductView(MyDialog):
         # Methods
 
     def on_select(self, event):
-        pass
+        self.select_row = self.lc_details.GetFocusedItem()
+        name = f'{self.lc_details.GetItem(self.select_row, col=0).GetText()}_{self.lc_details.GetItem(self.select_row, col=1).GetText()}'
+        self.select_id = int(self.lc_details.GetItem(self.select_row, col=1).GetText())
+        print(self.select_row)  # todo
+        print(self.select_id)
 
     def on_save(self, event):
         if self.list_editing:
@@ -327,13 +355,19 @@ class ProductView(MyDialog):
         self.Destroy()
 
     def on_add(self, event):
-        pass
+        self.editing = False
+        self.show_default_object_view()
+        self.enable_buttons()
 
     def on_edit(self, event):
-        pass
+        self.editing = True
+        self.show_fulled_object_view()
 
     def on_delete(self, event):
-        pass
+        self.tab_model.delete(self.select_id)
+        self.lc_details.DeleteItem(self.select_row)
+        self.disable_buttons()
+
 
     def get_all_widgets(self) -> tuple:
         return self.tc_model, self.tc_size
@@ -341,11 +375,31 @@ class ProductView(MyDialog):
     def get_all_value_widgets(self) -> tuple:
         return self.tc_model.GetValue(), self.tc_size.GetValue()
 
+    def enable_buttons(self):
+        if self.tab_model.product.get_long() == 1:
+            self.btn_edit.Enable(True)
+            self.btn_delete.Enable(True)
+
+    def disable_buttons(self):
+        if self.tab_model.product.get_long() <= 0:
+            self.btn_edit.Enable(False)
+            self.btn_delete.Enable(False)
+
+    def show_default_object_view(self):
+        detail_view = DetailView(self, self.tab_model, self.lc_details, self.select_id, self.select_row, self.editing)
+        detail_view.ShowModal()
+
+    def show_fulled_object_view(self):
+        detail_view = DetailView(self, self.tab_model, self.lc_details, self.select_id, self.select_row, self.editing)
+        self.tab_model.set_value_widgets(self.select_id, *detail_view.get_all_widgets())
+        detail_view.ShowModal()
+
 
 class ProductListView(InterfaceListView):
     def __init__(self, parent, list_model: ListModel, tab_model: TabModel):
         super().__init__(parent, list_model)
         self.tab_model = tab_model
+        self.st_title.SetLabel(lang.NAME_TITLE['product'])
 
     def show_default_object_view(self):
         """Показує діалогове вікно Product заповнене за замовчуванням"""
